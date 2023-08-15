@@ -22,7 +22,7 @@
                                 <color key="backgroundColor" name="YP Black"/>
                                 <color key="sectionIndexBackgroundColor" name="YP Black"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ImagesListCell" rowHeight="224" id="BwS-Nt-sGQ" customClass="ImagesListCell" customModule="ImageFeed" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ImagesListCell" rowHeight="224" id="BwS-Nt-sGQ" customClass="ImagesListCell" customModule="ImageFeed" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="414" height="224"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="BwS-Nt-sGQ" id="tgY-wG-cjj">
@@ -45,18 +45,22 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mpu-Tu-ehH" userLabel="Like Button">
-                                                    <rect key="frame" x="357" y="16" width="30" height="27"/>
+                                                    <rect key="frame" x="354" y="4" width="44" height="44"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="44" id="49H-wJ-5LN"/>
+                                                        <constraint firstAttribute="height" constant="44" id="xjW-uD-jEr"/>
+                                                    </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                    <state key="normal" image="No Active"/>
+                                                    <state key="normal" image="Like"/>
                                                 </button>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
-                                                <constraint firstItem="oEi-hY-vQI" firstAttribute="trailing" secondItem="mpu-Tu-ehH" secondAttribute="trailing" constant="11" id="GZj-BA-GrV"/>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="top" secondItem="tgY-wG-cjj" secondAttribute="top" constant="4" id="I9d-Sh-CvI"/>
+                                                <constraint firstItem="oEi-hY-vQI" firstAttribute="trailing" secondItem="mpu-Tu-ehH" secondAttribute="trailing" id="ViG-eg-QbF"/>
                                                 <constraint firstAttribute="trailing" secondItem="oEi-hY-vQI" secondAttribute="trailing" constant="16" id="W9H-QZ-hPP"/>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="leading" secondItem="tgY-wG-cjj" secondAttribute="leading" constant="16" id="axW-w4-WJ2"/>
-                                                <constraint firstItem="mpu-Tu-ehH" firstAttribute="top" secondItem="oEi-hY-vQI" secondAttribute="top" constant="12" id="et7-T5-BWp"/>
+                                                <constraint firstItem="mpu-Tu-ehH" firstAttribute="top" secondItem="oEi-hY-vQI" secondAttribute="top" id="et7-T5-BWp"/>
                                                 <constraint firstAttribute="bottom" secondItem="oEi-hY-vQI" secondAttribute="bottom" constant="4" id="nnq-Xr-eoK"/>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="bottom" secondItem="3IW-6L-9Ia" secondAttribute="bottom" constant="8" id="p3l-sX-AAE"/>
                                                 <constraint firstItem="3IW-6L-9Ia" firstAttribute="leading" secondItem="oEi-hY-vQI" secondAttribute="leading" constant="8" id="w0v-gk-ddg"/>
@@ -165,7 +169,7 @@
     </scenes>
     <resources>
         <image name="0" width="200" height="132"/>
-        <image name="No Active" width="30" height="27"/>
+        <image name="Like" width="30" height="27"/>
         <image name="avatar" width="70" height="70"/>
         <image name="logout_button" width="24" height="24"/>
         <namedColor name="YP Black">
