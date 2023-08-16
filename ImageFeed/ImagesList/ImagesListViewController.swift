@@ -8,7 +8,8 @@
 import UIKit
 
 class ImagesListViewController: UIViewController {
-
+    private let ShowSingleImageSegueIdentifier = "ShowSingleImage"
+    
     @IBOutlet private var tableView: UITableView!
     
     //для форматирования даты
@@ -25,7 +26,20 @@ class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == ShowSingleImageSegueIdentifier {
+            let viewController = segue.destination as! SingleImageViewController
+            let indexPath = sender as! IndexPath
+            let image = UIImage(named: photosName[indexPath.row])
+            viewController.image = image
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
+    
 }
 
 extension ImagesListViewController {
@@ -45,7 +59,7 @@ extension ImagesListViewController {
 extension ImagesListViewController: UITableViewDelegate {
     //в ответе за тапы по ячейке
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+            performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
     }
     
     //в ответе за высоту ячейки
@@ -79,7 +93,7 @@ extension ImagesListViewController: UITableViewDataSource {
                 }
                 
         configCell(for: imageListCell, with: indexPath)
-                return imageListCell
+        return imageListCell
     }
     
 
