@@ -50,9 +50,11 @@ extension URLRequest {
     static func makeHTTPRequest(
         path: String,
         httpMethod: String,
-        baseURL: URL = DefaultBaseURL
+        baseURL: URL? = nil
     ) -> URLRequest? {
-        guard let url = URL(string: path, relativeTo: baseURL) else {
+        let effectiveBaseURL = baseURL ?? defaultBaseURL
+        
+        guard let url = URL(string: path, relativeTo: effectiveBaseURL) else {
             return nil
         }
         var request = URLRequest(url: url)
