@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D10A2F622AC56DEF00AEA933 /* AlertPresentableDelagate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10A2F612AC56DEF00AEA933 /* AlertPresentableDelagate.swift */; };
 		D14D53A42A35156E0023C0FB /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14D53A32A35156E0023C0FB /* ImagesListCell.swift */; };
 		D1559E292A8FD9B70087EC22 /* OAuth2Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1559E282A8FD9B70087EC22 /* OAuth2Service.swift */; };
 		D1559E2B2A8FD9D50087EC22 /* OAuth2TokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1559E2A2A8FD9D50087EC22 /* OAuth2TokenStorage.swift */; };
@@ -24,7 +25,6 @@
 		D1B24FA42AC4433700407CAF /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FA32AC4433700407CAF /* ProfileService.swift */; };
 		D1B24FA62AC4437A00407CAF /* UIBlockingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FA52AC4437A00407CAF /* UIBlockingProgressHUD.swift */; };
 		D1B24FA82AC4A0F500407CAF /* AlertPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FA72AC4A0F500407CAF /* AlertPresenter.swift */; };
-		D1B24FAA2AC4A12C00407CAF /* AlertPresentableDelagate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FA92AC4A12C00407CAF /* AlertPresentableDelagate.swift */; };
 		D1B24FAC2AC4A15200407CAF /* AlertPresenterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FAB2AC4A15200407CAF /* AlertPresenterProtocol.swift */; };
 		D1B24FAF2AC4A2EE00407CAF /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FAE2AC4A2EE00407CAF /* UIApplication.swift */; };
 		D1B24FB12AC4A66000407CAF /* AuthViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B24FB02AC4A66000407CAF /* AuthViewControllerDelegate.swift */; };
@@ -43,6 +43,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D10A2F612AC56DEF00AEA933 /* AlertPresentableDelagate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresentableDelagate.swift; sourceTree = "<group>"; };
 		D14D53A32A35156E0023C0FB /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		D1559E282A8FD9B70087EC22 /* OAuth2Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2Service.swift; sourceTree = "<group>"; };
 		D1559E2A2A8FD9D50087EC22 /* OAuth2TokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2TokenStorage.swift; sourceTree = "<group>"; };
@@ -57,7 +58,6 @@
 		D1B24FA32AC4433700407CAF /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		D1B24FA52AC4437A00407CAF /* UIBlockingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBlockingProgressHUD.swift; sourceTree = "<group>"; };
 		D1B24FA72AC4A0F500407CAF /* AlertPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenter.swift; sourceTree = "<group>"; };
-		D1B24FA92AC4A12C00407CAF /* AlertPresentableDelagate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AlertPresentableDelagate.swift; path = ../../../../../../Pictures/AlertPresentableDelagate.swift; sourceTree = "<group>"; };
 		D1B24FAB2AC4A15200407CAF /* AlertPresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenterProtocol.swift; sourceTree = "<group>"; };
 		D1B24FAE2AC4A2EE00407CAF /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		D1B24FB02AC4A66000407CAF /* AuthViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewControllerDelegate.swift; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 			children = (
 				D1B24F9F2AC442E500407CAF /* AlertModel.swift */,
 				D1B24FA72AC4A0F500407CAF /* AlertPresenter.swift */,
-				D1B24FA92AC4A12C00407CAF /* AlertPresentableDelagate.swift */,
+				D10A2F612AC56DEF00AEA933 /* AlertPresentableDelagate.swift */,
 				D1B24FAB2AC4A15200407CAF /* AlertPresenterProtocol.swift */,
 			);
 			path = Alert;
@@ -319,10 +319,10 @@
 				D1F470F52A3C30B7000265C3 /* ProfileViewController.swift in Sources */,
 				D1B59D9D2A8FF2CA00888520 /* URLRequests.swift in Sources */,
 				D1B24FA62AC4437A00407CAF /* UIBlockingProgressHUD.swift in Sources */,
-				D1B24FAA2AC4A12C00407CAF /* AlertPresentableDelagate.swift in Sources */,
 				D1B59D9B2A8FEE0200888520 /* OAuthTokenResponseBody.swift in Sources */,
 				D1559E2E2A8FDA010087EC22 /* SplashViewController.swift in Sources */,
 				D1B24FA42AC4433700407CAF /* ProfileService.swift in Sources */,
+				D10A2F622AC56DEF00AEA933 /* AlertPresentableDelagate.swift in Sources */,
 				D1B24FB32AC4A82D00407CAF /* WebViewViewControllerDelegate.swift in Sources */,
 				D1CCB0EE2A26B7A8008D9A99 /* AppDelegate.swift in Sources */,
 				D1559E2B2A8FD9D50087EC22 /* OAuth2TokenStorage.swift in Sources */,
