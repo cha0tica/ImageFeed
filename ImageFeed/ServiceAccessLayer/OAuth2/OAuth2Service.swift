@@ -10,42 +10,59 @@ import Foundation
 final class OAuth2Service {
     
     static let shared = OAuth2Service()
-    private let urlSession = URLSession.shared
-    
+    let urlSession = URLSession.shared
+    var task: URLSessionTask?
+    var lastCode: String?
     private (set) var authToken: String? {
         get {
-            return OAuth2TokenStorage().token
+            let tokenStorage = OAuth2TokenStorage()
+            return tokenStorage.token
         }
         set {
-            OAuth2TokenStorage().token = newValue
+            let tokenStorage = OAuth2TokenStorage()
+            tokenStorage.token = newValue
         }
     }
     
-    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+    init() { }
+    
+    func fetchAuthToken(
+        _ code: String,
+        completion: @escaping (Result<String,Error>) -> Void
+    ) {
+        assert(Thread.isMainThread)
+        if lastCode == code { return }
+        task?.cancel()
+        lastCode = code
+        
         guard let request = authTokenRequest(code: code) else {
-            fatalError("Unable to create fetch authorization token request")
+            return
         }
-        let task = object(for: request) { [weak self] result in
-            guard let self = self else { return }
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                
                 switch result {
-                case .success(let body):
-                    let authToken = body.accessToken
-                    self.authToken = authToken
-                    completion(.success(authToken))
-                case .failure(let error):
-                    completion(.failure(error))
+                    case .success(let body):
+                        let authToken = body.accessToken
+                        self.authToken = authToken
+                        completion(.success(authToken))
+                        self.task = nil
+                    case .failure(let error):
+                        completion(.failure(error))
+                        self.lastCode = nil
                 }
             }
         }
+        
+        self.task = task
         task.resume()
     }
 }
 
-
-
 extension OAuth2Service {
-    private func object(
+    func object(
         for request: URLRequest,
         completion: @escaping (Result<OAuthTokenResponseBody, Error>) -> Void
     ) -> URLSessionTask {

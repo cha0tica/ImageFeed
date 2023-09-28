@@ -9,12 +9,11 @@ import UIKit
 
 class ImagesListViewController: UIViewController {
     private enum Constants {
-            static let showSingleImageSegueIdentifier = "ShowSingleImage"
+        static let showSingleImageSegueIdentifier = "ShowSingleImage"
     }
     
     @IBOutlet private var tableView: UITableView!
     
-    //для форматирования даты
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -22,7 +21,6 @@ class ImagesListViewController: UIViewController {
         return formatter
     }()
     
-    //создаем массив чисел от 0 до 19 и возвращает массив строк - это имена картинок
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
     override func viewDidLoad() {
@@ -41,7 +39,6 @@ class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
 }
 
 extension ImagesListViewController {
@@ -61,7 +58,7 @@ extension ImagesListViewController {
 extension ImagesListViewController: UITableViewDelegate {
     //в ответе за тапы по ячейке
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
+        performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
     }
     
     //в ответе за высоту ячейки
@@ -89,11 +86,11 @@ extension ImagesListViewController: UITableViewDataSource {
         
         //включаем переиспользование ячеек
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-                
-                guard let imageListCell = cell as? ImagesListCell else {
-                    return UITableViewCell()
-                }
-                
+        
+        guard let imageListCell = cell as? ImagesListCell else {
+            return UITableViewCell()
+        }
+        
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
     }
