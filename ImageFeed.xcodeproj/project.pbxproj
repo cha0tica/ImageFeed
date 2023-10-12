@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		D10A2F622AC56DEF00AEA933 /* AlertPresentableDelagate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10A2F612AC56DEF00AEA933 /* AlertPresentableDelagate.swift */; };
+		D10A2F652AC74AD200AEA933 /* ImagesListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10A2F642AC74AD200AEA933 /* ImagesListService.swift */; };
+		D10A2F682AC74EE500AEA933 /* PhotoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10A2F672AC74EE500AEA933 /* PhotoModel.swift */; };
+		D10A2F6A2AC7566500AEA933 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10A2F692AC7566500AEA933 /* DataService.swift */; };
+		D129C62E2AD8273F00919D95 /* Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D129C62D2AD8273F00919D95 /* Gradient.swift */; };
 		D14D53A42A35156E0023C0FB /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14D53A32A35156E0023C0FB /* ImagesListCell.swift */; };
 		D1559E292A8FD9B70087EC22 /* OAuth2Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1559E282A8FD9B70087EC22 /* OAuth2Service.swift */; };
 		D1559E2B2A8FD9D50087EC22 /* OAuth2TokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1559E2A2A8FD9D50087EC22 /* OAuth2TokenStorage.swift */; };
@@ -44,6 +48,10 @@
 
 /* Begin PBXFileReference section */
 		D10A2F612AC56DEF00AEA933 /* AlertPresentableDelagate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresentableDelagate.swift; sourceTree = "<group>"; };
+		D10A2F642AC74AD200AEA933 /* ImagesListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListService.swift; sourceTree = "<group>"; };
+		D10A2F672AC74EE500AEA933 /* PhotoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoModel.swift; sourceTree = "<group>"; };
+		D10A2F692AC7566500AEA933 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		D129C62D2AD8273F00919D95 /* Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gradient.swift; sourceTree = "<group>"; };
 		D14D53A32A35156E0023C0FB /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		D1559E282A8FD9B70087EC22 /* OAuth2Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2Service.swift; sourceTree = "<group>"; };
 		D1559E2A2A8FD9D50087EC22 /* OAuth2TokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2TokenStorage.swift; sourceTree = "<group>"; };
@@ -91,6 +99,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D10A2F632AC74AC300AEA933 /* ImagesListService */ = {
+			isa = PBXGroup;
+			children = (
+				D10A2F642AC74AD200AEA933 /* ImagesListService.swift */,
+				D10A2F672AC74EE500AEA933 /* PhotoModel.swift */,
+				D10A2F692AC7566500AEA933 /* DataService.swift */,
+			);
+			path = ImagesListService;
+			sourceTree = "<group>";
+		};
+		D129C62C2AD8273400919D95 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				D129C62D2AD8273F00919D95 /* Gradient.swift */,
+			);
+			path = Animations;
+			sourceTree = "<group>";
+		};
 		D14D53A52A3515990023C0FB /* ImagesList */ = {
 			isa = PBXGroup;
 			children = (
@@ -104,6 +130,7 @@
 		D1559E262A8FD9960087EC22 /* ServiceAccessLayer */ = {
 			isa = PBXGroup;
 			children = (
+				D10A2F632AC74AC300AEA933 /* ImagesListService */,
 				D1B24F9B2AC4428400407CAF /* Profile */,
 				D1559E272A8FD9A30087EC22 /* OAuth2 */,
 			);
@@ -181,8 +208,6 @@
 		D1CCB0E12A26B7A8008D9A99 = {
 			isa = PBXGroup;
 			children = (
-				D1B24FAE2AC4A2EE00407CAF /* UIApplication.swift */,
-				D1B24FB62AC4CB3E00407CAF /* TabBar */,
 				D1CCB0EC2A26B7A8008D9A99 /* ImageFeed */,
 				D1CCB0EB2A26B7A8008D9A99 /* Products */,
 			);
@@ -199,6 +224,9 @@
 		D1CCB0EC2A26B7A8008D9A99 /* ImageFeed */ = {
 			isa = PBXGroup;
 			children = (
+				D1B24FAE2AC4A2EE00407CAF /* UIApplication.swift */,
+				D1B24FB62AC4CB3E00407CAF /* TabBar */,
+				D129C62C2AD8273400919D95 /* Animations */,
 				D1B24FAD2AC4A1C300407CAF /* WebViewController */,
 				D1B24F9E2AC442D400407CAF /* Alert */,
 				D1559E2F2A8FDA2D0087EC22 /* Auth */,
@@ -310,10 +338,13 @@
 				D1CCB0F22A26B7A8008D9A99 /* ImagesListViewController.swift in Sources */,
 				D1559E332A8FDA5D0087EC22 /* Constants.swift in Sources */,
 				D1B24FB82AC4CB5100407CAF /* TabBarController.swift in Sources */,
+				D10A2F682AC74EE500AEA933 /* PhotoModel.swift in Sources */,
 				D14D53A42A35156E0023C0FB /* ImagesListCell.swift in Sources */,
 				D1B24F9D2AC442B600407CAF /* ProfileModels.swift in Sources */,
 				D1B24FA02AC442E500407CAF /* AlertModel.swift in Sources */,
 				D1B24FB12AC4A66000407CAF /* AuthViewControllerDelegate.swift in Sources */,
+				D129C62E2AD8273F00919D95 /* Gradient.swift in Sources */,
+				D10A2F6A2AC7566500AEA933 /* DataService.swift in Sources */,
 				D1559E312A8FDA3D0087EC22 /* AuthViewController.swift in Sources */,
 				D1B24FA22AC4430C00407CAF /* ProfileImageService.swift in Sources */,
 				D1F470F52A3C30B7000265C3 /* ProfileViewController.swift in Sources */,
@@ -331,6 +362,7 @@
 				D1B24FB52AC4C16100407CAF /* Colors.swift in Sources */,
 				D1559E372A8FDE540087EC22 /* WebViewViewController.swift in Sources */,
 				D176818D2A8D2950005547BD /* SingleImageViewController.swift in Sources */,
+				D10A2F652AC74AD200AEA933 /* ImagesListService.swift in Sources */,
 				D1CCB0F02A26B7A8008D9A99 /* SceneDelegate.swift in Sources */,
 				D1559E292A8FD9B70087EC22 /* OAuth2Service.swift in Sources */,
 			);
@@ -408,7 +440,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -462,7 +494,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

@@ -121,7 +121,7 @@ extension SplashViewController {
         let alert = AlertModel(title: "Что-то пошло не так(",
                                message: message,
                                buttonText: "Ок",
-                               completion: { [weak self] in
+                               firstcompletion: { [weak self] in
             guard let self = self else {
                 return
             }

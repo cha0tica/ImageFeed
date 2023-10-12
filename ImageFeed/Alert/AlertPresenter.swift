@@ -23,10 +23,18 @@ extension AlertPresenter: AlertPresenterProtocol {
                                       preferredStyle: .alert)
         
         let action = UIAlertAction(title: alertArgs.buttonText, style: .default) { _ in
-            alertArgs.completion()
+            alertArgs.firstcompletion()
         }
         
         alert.addAction(action)
+        
+        if let secondButtonText = alertArgs.secondButtonText {
+            let secondAction = UIAlertAction(title: secondButtonText, style: .default) { _ in
+                alertArgs.secondCompletion()
+            }
+            alert.addAction(secondAction)
+        }
+        
         delagate?.present(alert: alert, animated: true)
     }
 }

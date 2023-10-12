@@ -53,22 +53,45 @@
                                                     </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                     <state key="normal" image="Like"/>
+                                                    <connections>
+                                                        <action selector="likeButtonClicked:" destination="BwS-Nt-sGQ" eventType="touchUpInside" id="at6-Gq-TfX"/>
+                                                    </connections>
                                                 </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l5c-kf-Kt6">
+                                                    <rect key="frame" x="16" y="220" width="382" height="0.0"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="30" id="QyW-bs-rHD"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" name="YP White"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="top" secondItem="tgY-wG-cjj" secondAttribute="top" constant="4" id="I9d-Sh-CvI"/>
+                                                <constraint firstItem="oEi-hY-vQI" firstAttribute="bottom" secondItem="l5c-kf-Kt6" secondAttribute="bottom" id="KFY-0Y-14T">
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="16"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </constraint>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="trailing" secondItem="mpu-Tu-ehH" secondAttribute="trailing" id="ViG-eg-QbF"/>
                                                 <constraint firstAttribute="trailing" secondItem="oEi-hY-vQI" secondAttribute="trailing" constant="16" id="W9H-QZ-hPP"/>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="leading" secondItem="tgY-wG-cjj" secondAttribute="leading" constant="16" id="axW-w4-WJ2"/>
+                                                <constraint firstItem="oEi-hY-vQI" firstAttribute="trailing" secondItem="l5c-kf-Kt6" secondAttribute="trailing" id="dAR-1D-YOv"/>
                                                 <constraint firstItem="mpu-Tu-ehH" firstAttribute="top" secondItem="oEi-hY-vQI" secondAttribute="top" id="et7-T5-BWp"/>
                                                 <constraint firstAttribute="bottom" secondItem="oEi-hY-vQI" secondAttribute="bottom" constant="4" id="nnq-Xr-eoK"/>
                                                 <constraint firstItem="oEi-hY-vQI" firstAttribute="bottom" secondItem="3IW-6L-9Ia" secondAttribute="bottom" constant="8" id="p3l-sX-AAE"/>
                                                 <constraint firstItem="3IW-6L-9Ia" firstAttribute="leading" secondItem="oEi-hY-vQI" secondAttribute="leading" constant="8" id="w0v-gk-ddg"/>
+                                                <constraint firstItem="l5c-kf-Kt6" firstAttribute="leading" secondItem="oEi-hY-vQI" secondAttribute="leading" id="xbJ-bS-XPa"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
+                                            <outlet property="backgroundLabel" destination="l5c-kf-Kt6" id="n60-nV-LC9"/>
                                             <outlet property="cellImage" destination="oEi-hY-vQI" id="72A-O1-AuE"/>
                                             <outlet property="dateLabel" destination="3IW-6L-9Ia" id="f2z-xi-PH1"/>
                                             <outlet property="likeButton" destination="mpu-Tu-ehH" id="LWX-Of-H8S"/>

@@ -14,6 +14,9 @@ final  class ProfileViewController: UIViewController {
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
+    private let gradient = Gradient()
+    private var animationLayers = Set<CALayer>()
+    private var alertPresenter: AlertPresenter?
     
     private var profilePhotoImage : UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "person.crop.circle.fill"))
@@ -54,23 +57,11 @@ final  class ProfileViewController: UIViewController {
     }()
     
     private var exitButton : UIButton = {
-        let image = UIImage(named: "logout_image") ?? UIImage(systemName: "ipad.and.arrow.forward")!
+        let image = UIImage(named: "logout_button") ?? UIImage(systemName: "ipad.and.arrow.forward")!
         
         let button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(image, for: .normal)
-        
-        if #available(iOS 14.0, *) {
-            let logOutAction = UIAction(title: "Logout") { (ACTION) in
-                //TODO: Выход из профиля
-            }
-            button.addAction(logOutAction, for: .touchUpInside)
-        } else {
-            button.addTarget(ProfileViewController.self,
-                             action: #selector(didTapButton),
-                             for: .touchUpInside)
-        }
-        
         return button
     }()
     
@@ -78,12 +69,14 @@ final  class ProfileViewController: UIViewController {
         return .lightContent
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         updateProfileInfo(profile: profileService.profile)
         addSubViews()
         configureConstraints()
+        alertPresenter = AlertPresenter(delagate: self)
+        addButtonAction()
+        addGradients()
     }
 }
 
@@ -125,7 +118,7 @@ private extension ProfileViewController {
 private extension ProfileViewController {
     @objc
     func didTapButton() {
-        //TODO: Выход из профиля
+        showAlertBeforeExit()
     }
     
     func updateProfileInfo(profile: Profile?) {
@@ -158,7 +151,106 @@ private extension ProfileViewController {
         profilePhotoImage.kf.setImage(
             with: url,
             placeholder: avatarPlaceholderImage
-        )
+        ) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                self.removeGradients()
+            case .failure:
+                self.removeGradients()
+                profilePhotoImage.image = avatarPlaceholderImage
+            }
+        }
+    }
+    
+    func addGradients() {
+        let profilePhotoImageGradient = gradient.getGradient(
+            size: CGSize(
+                width: 70,
+                height: 70
+            ),
+            cornerRadius: profilePhotoImage.layer.cornerRadius)
+        profilePhotoImage.layer.addSublayer(profilePhotoImageGradient)
+        animationLayers.insert(profilePhotoImageGradient)
+        
+        let profileUserNameLabelGradient = gradient.getGradient(size: CGSize(
+            width: profileUserNameLabel.bounds.width,
+            height: profileUserNameLabel.bounds.height
+        ))
+        profileUserNameLabel.layer.addSublayer(profileUserNameLabelGradient)
+        animationLayers.insert(profileUserNameLabelGradient)
+        
+        let profileDescLabelGradient = gradient.getGradient(size: CGSize(
+            width: profileDescLabel.bounds.width,
+            height: profileDescLabel.bounds.height
+        ))
+        profileDescLabel.layer.addSublayer(profileDescLabelGradient)
+        animationLayers.insert(profileDescLabelGradient)
+        
+        let profileNicknameLabelGradient = gradient.getGradient(size: CGSize(
+            width: profileNicknameLabel.bounds.width,
+            height: profileNicknameLabel.bounds.height
+        ))
+        profileNicknameLabel.layer.addSublayer(profileNicknameLabelGradient)
+        animationLayers.insert(profileNicknameLabelGradient)
+    }
+    
+    func removeGradients() {
+        for gradient in animationLayers {
+            gradient.removeFromSuperlayer()
+        }
+    }
+    
+    func addButtonAction() {
+        if #available(iOS 14.0, *) {
+            let logOutAction = UIAction(title: "showAlert") { [weak self] (ACTION) in
+                guard let self = self else { return }
+                self.showAlertBeforeExit()
+            }
+            exitButton.addAction(logOutAction, for: .touchUpInside)
+        } else {
+            exitButton.addTarget(ProfileViewController.self,
+                                   action: #selector(didTapButton),
+                                   for: .touchUpInside)
+        }
+    }
+    
+    func showAlertBeforeExit(){
+        DispatchQueue.main.async {
+            let alert = AlertModel(
+                title: "Пока, пока!",
+                message: "Уверены что хотите выйти?",
+                buttonText: "Да",
+                firstcompletion: { [weak self] in
+                    guard let self = self else { return }
+                    self.logOut()
+                },
+                secondButtonText: "Нет",
+                secondCompletion: { [weak self] in
+                    guard let self = self else { return }
+                    
+                    self.dismiss(animated: true)
+                })
+            
+            self.alertPresenter?.show(alert)
+        }
+    }
+    
+    func logOut() {
+        OAuth2TokenStorage().token = nil
+        WebViewViewController.cleanCookies()
+        
+        guard let window = UIApplication.shared.windows.first else {
+            assertionFailure("Invalid Configuration")
+            return
+        }
+        
+        window.rootViewController = SplashViewController()
     }
 }
 
+extension ProfileViewController: AlertPresentableDelagate {
+    func present(alert: UIAlertController, animated flag: Bool) {
+        self.present(alert, animated: flag)
+    }
+}

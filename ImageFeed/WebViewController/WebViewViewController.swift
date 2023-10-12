@@ -25,6 +25,7 @@ final class WebViewViewController: UIViewController {
     weak var delegate: WebViewViewControllerDelegate?
     private var estimatedProgressObservtion: NSKeyValueObservation?
     private var alertPresenter: AlertPresenterProtocol?
+    
     private struct WebKeys {
         static let clientId = "client_id"
         static let redirectUri = "redirect_uri"
@@ -40,7 +41,7 @@ final class WebViewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        alertPresenter = AlertPresenter(delagate: self)
         addEstimatedProgressObservtion()
         webView.navigationDelegate = self
         loadWebView()
@@ -99,6 +100,19 @@ extension WebViewViewController {
         
         webView.load(request)
     }
+    
+    static func cleanCookies() {
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        WKWebsiteDataStore.default().fetchDataRecords(
+            ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+                records.forEach { record in
+                    WKWebsiteDataStore.default().removeData(
+                        ofTypes: record.dataTypes,
+                        for: [record],
+                        completionHandler: {})
+                }
+            }
+    }
 }
 
 private extension WebViewViewController {
@@ -124,7 +138,7 @@ extension WebViewViewController {
         let alert = AlertModel(title: "Ошибка",
                                message: message,
                                buttonText: "Ок",
-                               completion: { [weak self] in
+                               firstcompletion: { [weak self] in
             guard let self = self else { return }
             dismiss(animated: true)
         })
