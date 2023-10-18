@@ -9,17 +9,64 @@ import Foundation
 import UIKit
 import Kingfisher
 
-final  class ProfileViewController: UIViewController {
+import UIKit
+import Kingfisher
+import WebKit
+
+final class ProfileViewController: UIViewController {
     
-    private let profileService = ProfileService.shared
+    private struct Keys {
+        static let main = "Main"
+        static let logoutImageName = "logout_image"
+        static let systemLogoutImageName = "ipad.and.arrow.forward"
+        static let logOutActionName = "showAlert"
+        static let systemAvatarImageName = "person.crop.circle.fill"
+        static let avatarPlaceholderImageName = "avatar_placeholder"
+        static let authViewControllerName = "AuthViewController"
+    }
+    
+    private let profileServise = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     private let gradient = Gradient()
     private var animationLayers = Set<CALayer>()
     private var alertPresenter: AlertPresenter?
     
-    private var profilePhotoImage : UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "person.crop.circle.fill"))
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.textColor = .ypWhite
+        
+        return label
+    }()
+    private let nickNameLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.textColor = .ypGray
+        
+        return label
+    }()
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 23, weight: .bold)
+        label.textColor = .ypWhite
+        
+        return label
+    }()
+    private let logOutButton: UIButton = {
+        let image = UIImage(named: Keys.logoutImageName) ?? UIImage(systemName: Keys.systemLogoutImageName)!
+        
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(image, for: .normal)
+        
+        return button
+    }()
+    private let avatarImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: Keys.systemAvatarImageName))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.layer.cornerRadius = 35
         imageView.clipsToBounds = true
@@ -27,89 +74,51 @@ final  class ProfileViewController: UIViewController {
         return imageView
     }()
     
-    private var profileUserNameLabel : UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Екатерина Новикова"
-        label.font = .systemFont(ofSize: 23, weight: .bold)
-        label.textColor = .ypWhite
-        
-        return label
-    }()
-    
-    private var profileNicknameLabel : UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "@ekaterina_novikova"
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = .ypGray
-        return label
-    }()
-    
-    private var profileDescLabel : UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Hello, world!"
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = .ypWhite
-        
-        return label
-    }()
-    
-    private var exitButton : UIButton = {
-        let image = UIImage(named: "logout_button") ?? UIImage(systemName: "ipad.and.arrow.forward")!
-        
-        let button = UIButton(type: .custom)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(image, for: .normal)
-        return button
-    }()
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateProfileInfo(profile: profileService.profile)
+        
         addSubViews()
         configureConstraints()
+        
         alertPresenter = AlertPresenter(delagate: self)
         addButtonAction()
+        
         addGradients()
+        view.backgroundColor = .black
+        updateProfileInfo(profile: profileServise.profile)
+        
     }
 }
 
 private extension ProfileViewController {
-    
     func addSubViews() {
-        view.addSubview(profilePhotoImage)
-        view.addSubview(profileUserNameLabel)
-        view.addSubview(profileNicknameLabel)
-        view.addSubview(profileDescLabel)
-        view.addSubview(exitButton)
+        view.addSubview(avatarImageView)
+        view.addSubview(descriptionLabel)
+        view.addSubview(nickNameLabel)
+        view.addSubview(nameLabel)
+        view.addSubview(logOutButton)
     }
     
     func configureConstraints() {
         NSLayoutConstraint.activate([
-            profilePhotoImage.widthAnchor.constraint(equalToConstant: 70),
-            profilePhotoImage.heightAnchor.constraint(equalToConstant: 70),
-            profilePhotoImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
-            profilePhotoImage.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 70),
+            avatarImageView.heightAnchor.constraint(equalToConstant: 70),
+            avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
+            avatarImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             
-            exitButton.widthAnchor.constraint(equalToConstant: 44),
-            exitButton.heightAnchor.constraint(equalToConstant: 44),
-            exitButton.centerYAnchor.constraint(equalTo: profilePhotoImage.centerYAnchor),
-            exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            logOutButton.widthAnchor.constraint(equalToConstant: 44),
+            logOutButton.heightAnchor.constraint(equalToConstant: 44),
+            logOutButton.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor),
+            logOutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
-            profileUserNameLabel.leadingAnchor.constraint(equalTo: profilePhotoImage.leadingAnchor),
-            profileUserNameLabel.topAnchor.constraint(equalTo: profilePhotoImage.bottomAnchor, constant: 8),
+            nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
+            nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 8),
             
-            profileNicknameLabel.leadingAnchor.constraint(equalTo: profilePhotoImage.leadingAnchor),
-            profileNicknameLabel.topAnchor.constraint(equalTo: profileUserNameLabel.bottomAnchor, constant: 8),
+            nickNameLabel.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
+            nickNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             
-            profileDescLabel.leadingAnchor.constraint(equalTo: profilePhotoImage.leadingAnchor),
-            profileDescLabel.topAnchor.constraint(equalTo: profileNicknameLabel.bottomAnchor, constant: 8)
+            descriptionLabel.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
+            descriptionLabel.topAnchor.constraint(equalTo: nickNameLabel.bottomAnchor, constant: 8)
             
         ])
     }
@@ -123,9 +132,9 @@ private extension ProfileViewController {
     
     func updateProfileInfo(profile: Profile?) {
         guard let profile = profile else { return }
-        profileUserNameLabel.text = profile.name
-        profileNicknameLabel.text = profile.loginName
-        profileDescLabel.text = profile.bio
+        nameLabel.text = profile.name
+        nickNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
         
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.DidChangeNotification,
@@ -136,7 +145,6 @@ private extension ProfileViewController {
             self.updateAvatar()
         }
         updateAvatar()
-        print(profileUserNameLabel)
     }
     
     func updateAvatar() {
@@ -145,54 +153,54 @@ private extension ProfileViewController {
             let url = URL(string: avatarURL)
         else { return }
         
-        let avatarPlaceholderImage = UIImage(named: "avatar_placeholder")
+        let avatarPlaceholderImage = UIImage(named: Keys.avatarPlaceholderImageName)
         
-        profilePhotoImage.kf.indicatorType = .activity
-        profilePhotoImage.kf.setImage(
+        avatarImageView.kf.indicatorType = .activity
+        avatarImageView.kf.setImage(
             with: url,
             placeholder: avatarPlaceholderImage
         ) { [weak self] result in
             guard let self = self else { return }
             switch result {
-            case .success:
-                self.removeGradients()
-            case .failure:
-                self.removeGradients()
-                profilePhotoImage.image = avatarPlaceholderImage
+                case .success:
+                    self.removeGradients()
+                case .failure:
+                    self.removeGradients()
+                    avatarImageView.image = avatarPlaceholderImage
             }
         }
     }
     
     func addGradients() {
-        let profilePhotoImageGradient = gradient.getGradient(
-            size: CGSize(
-                width: 70,
-                height: 70
-            ),
-            cornerRadius: profilePhotoImage.layer.cornerRadius)
-        profilePhotoImage.layer.addSublayer(profilePhotoImageGradient)
-        animationLayers.insert(profilePhotoImageGradient)
-        
-        let profileUserNameLabelGradient = gradient.getGradient(size: CGSize(
-            width: profileUserNameLabel.bounds.width,
-            height: profileUserNameLabel.bounds.height
-        ))
-        profileUserNameLabel.layer.addSublayer(profileUserNameLabelGradient)
-        animationLayers.insert(profileUserNameLabelGradient)
-        
-        let profileDescLabelGradient = gradient.getGradient(size: CGSize(
-            width: profileDescLabel.bounds.width,
-            height: profileDescLabel.bounds.height
-        ))
-        profileDescLabel.layer.addSublayer(profileDescLabelGradient)
-        animationLayers.insert(profileDescLabelGradient)
-        
-        let profileNicknameLabelGradient = gradient.getGradient(size: CGSize(
-            width: profileNicknameLabel.bounds.width,
-            height: profileNicknameLabel.bounds.height
-        ))
-        profileNicknameLabel.layer.addSublayer(profileNicknameLabelGradient)
-        animationLayers.insert(profileNicknameLabelGradient)
+            let avatarGradient = gradient.getGradient(
+                size: CGSize(
+                    width: 70,
+                    height: 70
+                ),
+                cornerRadius: avatarImageView.layer.cornerRadius)
+            avatarImageView.layer.addSublayer(avatarGradient)
+            animationLayers.insert(avatarGradient)
+            
+            let nameLabelGradient = gradient.getGradient(size: CGSize(
+                width: nameLabel.bounds.width,
+                height: nameLabel.bounds.height
+            ))
+            nameLabel.layer.addSublayer(nameLabelGradient)
+            animationLayers.insert(nameLabelGradient)
+            
+            let descriptionLabelGradient = gradient.getGradient(size: CGSize(
+                width: descriptionLabel.bounds.width,
+                height: descriptionLabel.bounds.height
+            ))
+            descriptionLabel.layer.addSublayer(descriptionLabelGradient)
+            animationLayers.insert(descriptionLabelGradient)
+            
+            let loginLabelGradient = gradient.getGradient(size: CGSize(
+                width: nickNameLabel.bounds.width,
+                height: nickNameLabel.bounds.height
+            ))
+            nickNameLabel.layer.addSublayer(loginLabelGradient)
+            animationLayers.insert(loginLabelGradient)
     }
     
     func removeGradients() {
@@ -203,13 +211,13 @@ private extension ProfileViewController {
     
     func addButtonAction() {
         if #available(iOS 14.0, *) {
-            let logOutAction = UIAction(title: "showAlert") { [weak self] (ACTION) in
+            let logOutAction = UIAction(title: Keys.logOutActionName) { [weak self] (ACTION) in
                 guard let self = self else { return }
                 self.showAlertBeforeExit()
             }
-            exitButton.addAction(logOutAction, for: .touchUpInside)
+            logOutButton.addAction(logOutAction, for: .touchUpInside)
         } else {
-            exitButton.addTarget(ProfileViewController.self,
+            logOutButton.addTarget(ProfileViewController.self,
                                    action: #selector(didTapButton),
                                    for: .touchUpInside)
         }

@@ -8,11 +8,10 @@
 import Foundation
 
 final class OAuth2Service {
-    
     static let shared = OAuth2Service()
-    let urlSession = URLSession.shared
-    var task: URLSessionTask?
-    var lastCode: String?
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
     private (set) var authToken: String? {
         get {
             let tokenStorage = OAuth2TokenStorage()
@@ -24,7 +23,7 @@ final class OAuth2Service {
         }
     }
     
-    init() { }
+    private init() { }
     
     func fetchAuthToken(
         _ code: String,
@@ -61,34 +60,18 @@ final class OAuth2Service {
     }
 }
 
-extension OAuth2Service {
-    func object(
-        for request: URLRequest,
-        completion: @escaping (Result<OAuthTokenResponseBody, Error>) -> Void
-    ) -> URLSessionTask {
-        let decoder = JSONDecoder()
-        return urlSession.data(for: request) { (result: Result<Data, Error>) in
-            let response = result.flatMap { data -> Result<OAuthTokenResponseBody, Error> in
-                Result { try decoder.decode(OAuthTokenResponseBody.self, from: data) }
-            }
-            completion(response)
-        }
+private extension OAuth2Service {
+    func authTokenRequest(code: String) -> URLRequest? {
+        URLRequest.makeHTTPRequest(
+            path: "/oauth/token"
+            + "?client_id=\(accessKey)"
+            + "&&client_secret=\(secretKey)"
+            + "&&redirect_uri=\(redirectURI)"
+            + "&&code=\(code)"
+            + "&&grant_type=authorization_code",
+            httpMethod: "POST",
+            baseURL: URL(string: "https://unsplash.com")
+        )
     }
     
-    func authTokenRequest(code: String) -> URLRequest? {
-        guard let url = URL(string: "https://unsplash.com"),
-              let request = URLRequest.makeHTTPRequest(
-                path: "/oauth/token"
-                + "?client_id=\(accessKey)"
-                + "&&client_secret=\(secretKey)"
-                + "&&redirect_uri=\(redirectURI)"
-                + "&&code=\(code)"
-                + "&&grant_type=authorization_code",
-                httpMethod: "POST",
-                baseURL: url)
-        else {
-            return nil
-        }
-        return request
-    }
 }

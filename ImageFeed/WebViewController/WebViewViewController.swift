@@ -22,25 +22,25 @@ final class WebViewViewController: UIViewController {
     }
     @IBOutlet weak var progressView: UIProgressView!
     
-    weak var delegate: WebViewViewControllerDelegate?
-    private var estimatedProgressObservtion: NSKeyValueObservation?
-    private var alertPresenter: AlertPresenterProtocol?
-    
     private struct WebKeys {
         static let clientId = "client_id"
         static let redirectUri = "redirect_uri"
         static let responseType = "response_type"
         static let scope = "scope"
     }
-    
     private struct WebConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
         static let code = "code"
         static let authPath = "/oauth/authorize/native"
     }
     
+    weak var delegate: WebViewViewControllerDelegate?
+    private var estimatedProgressObservtion: NSKeyValueObservation?
+    private var alertPresenter: AlertPresenterProtocol?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         alertPresenter = AlertPresenter(delagate: self)
         addEstimatedProgressObservtion()
         webView.navigationDelegate = self
@@ -86,8 +86,7 @@ extension WebViewViewController {
         var urlComponents = URLComponents(string: WebConstants.unsplashAuthorizeURLString)
         
         urlComponents?.queryItems = [
-            URLQueryItem(name: WebKeys.clientId, value:
-                            accessKey),
+            URLQueryItem(name: WebKeys.clientId, value: accessKey),
             URLQueryItem(name: WebKeys.redirectUri, value: redirectURI),
             URLQueryItem(name: WebKeys.responseType, value: WebConstants.code),
             URLQueryItem(name: WebKeys.scope, value: accessScope)
@@ -100,7 +99,6 @@ extension WebViewViewController {
         
         webView.load(request)
     }
-    
     static func cleanCookies() {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().fetchDataRecords(
@@ -115,6 +113,7 @@ extension WebViewViewController {
     }
 }
 
+//MARK: - KVO
 private extension WebViewViewController {
     func addEstimatedProgressObservtion() {
         estimatedProgressObservtion = webView.observe(
@@ -135,14 +134,14 @@ private extension WebViewViewController {
 
 extension WebViewViewController {
     private func showErrorAlert(message: String = "Не удалось войти в систему"){
-        let alert = AlertModel(title: "Ошибка",
+        let alert = AlertModel(title: "Что-то пошло не так(",
                                message: message,
                                buttonText: "Ок",
                                firstcompletion: { [weak self] in
             guard let self = self else { return }
             dismiss(animated: true)
         })
-        alertPresenter = AlertPresenter(delagate: self)
+        
         alertPresenter?.show(alert)
     }
 }
