@@ -8,33 +8,57 @@
 import Foundation
 import UIKit
 
-final class AlertPresenter {
-    private weak var delagate: AlertPresentableDelagate?
+final class AlertPresenter: AlertPresenterProtocol {
+    private weak var viewController: UIViewController?
     
-    init(delagate: AlertPresentableDelagate?) {
-        self.delagate = delagate
+    var topVC: UIViewController {
+           var topController: UIViewController = UIApplication.shared.mainKeyWindow!.rootViewController!
+           while (topController.presentedViewController != nil) {
+               topController = topController.presentedViewController!
+           }
+           return topController
+       }
+    
+    init(viewController: UIViewController?) {
+        self.viewController = viewController
     }
-}
-
-extension AlertPresenter: AlertPresenterProtocol {
-    func show(_ alertArgs: AlertModel) {
-        let alert = UIAlertController(title: alertArgs.title,
-                                      message: alertArgs.message,
-                                      preferredStyle: .alert)
+    
+    func showAlert(_ model: AlertModel) {
+        let alert = UIAlertController(
+            title: model.title,
+            message: model.message,
+            preferredStyle: .alert
+            )
         
-        let action = UIAlertAction(title: alertArgs.buttonText, style: .default) { _ in
-            alertArgs.firstcompletion()
+        let action = UIAlertAction(
+            title: model.firstButtonText,
+            style: .default) { _ in
+            model.firstButtonCompletion()
+        }
+        
+        let secondAction = UIAlertAction(
+            title: model.secondButtonText,
+            style: .default) { _ in
+                model.secondButtonCompletion()
         }
         
         alert.addAction(action)
-        
-        if let secondButtonText = alertArgs.secondButtonText {
-            let secondAction = UIAlertAction(title: secondButtonText, style: .default) { _ in
-                alertArgs.secondCompletion()
-            }
-            alert.addAction(secondAction)
-        }
-        
-        delagate?.present(alert: alert, animated: true)
+        alert.addAction(secondAction)
+        topVC.present(alert, animated: true)
     }
 }
+
+extension UIApplication {
+    var mainKeyWindow: UIWindow? {
+        get {
+            if #available(iOS 13, *) {
+                return connectedScenes
+                    .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+                    .first { $0.isKeyWindow }
+            } else {
+                return keyWindow
+            }
+        }
+    }
+}
+

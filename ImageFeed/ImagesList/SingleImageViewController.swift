@@ -10,71 +10,41 @@ import UIKit
 
 final class SingleImageViewController: UIViewController {
     
-    var image: UIImage! {
-        didSet {
-            guard isViewLoaded else { return }
-            imageView.image = image
-            rescaleAndCenterImageInScrollView(image: image)
-        }
-    }
-    
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var scrollView: UIScrollView!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        alertPresenter = AlertPresenter(delagate: self)
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 1.25
-        
-        UIBlockingProgressHUD.show()
-        downloadImage()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        if let image = imageView.image {
-            rescaleAndCenterImageInScrollView(image: image)
-        }
-    }
     
     @IBAction func didTapBackButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func didTapShareButton(_ sender: Any) {
-        present(activityController, animated: true, completion: nil)
+        guard let image else { return }
+        let share = UIActivityViewController(
+            activityItems: [image],
+            applicationActivities: .none
+        )
+        
+        present(share, animated: true)
     }
     
-    var largeImageURL: URL?
-    private var alertPresenter: AlertPresenter?
-    private var activityController = UIActivityViewController(activityItems: [], applicationActivities: nil)
-  
-}
-
-extension SingleImageViewController: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        imageView
+    private var image: UIImage?
+    private var alertPresenter: AlertPresenterProtocol?
+    
+    var fullScreenImageURL: String?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        alertPresenter = AlertPresenter(viewController: self)
+        scrollView.minimumZoomScale = 0.1
+        scrollView.maximumZoomScale = 1.25
     }
     
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        UIView.animate(withDuration: 0.5) { [weak self] in
-            
-            guard let self = self,
-                  let image = self.imageView.image  else {
-                return
-            }
-            
-            self.rescaleAndCenterImageInScrollView(image: image)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        showFullScreenImage()
     }
-}
-
-private extension SingleImageViewController {
     
-    func rescaleAndCenterImageInScrollView(image: UIImage) {
+    private func rescaleAndCenterImageInScrollView(image: UIImage) {
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale
         view.layoutIfNeeded()
@@ -85,53 +55,47 @@ private extension SingleImageViewController {
         let scale = min(maxZoomScale, max(minZoomScale, max(hScale, vScale)))
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
-        
-        let halfWidth = (scrollView.bounds.size.width - imageView.frame.size.width) / 2
-        let halfHeight = (scrollView.bounds.size.height - imageView.frame.size.height) / 2
-        scrollView.contentInset = .init(top: halfHeight, left: halfWidth, bottom: 0, right: 0)
+        let newContentSize = scrollView.contentSize
+        let x = (newContentSize.width - visibleRectSize.width) / 2
+        let y = (newContentSize.height - visibleRectSize.height) / 2
+        scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
     }
     
-    func downloadImage() {
-        imageView.kf.setImage(with: largeImageURL) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
-            
+    private func showFullScreenImage() {
+        guard let url = URL(string: fullScreenImageURL ?? "") else { return }
+        UIBlockingProgressHUD.show()
+        imageView?.kf.setImage(with: url) { [weak self] result in
             guard let self = self else { return }
-            
             switch result {
-                case .success(let imageResult):
-                    self.rescaleAndCenterImageInScrollView(image: imageResult.image)
-                    activityController = UIActivityViewController(
-                        activityItems: [imageResult.image as Any],
-                        applicationActivities: nil
-                    )
-                case .failure:
-                    self.showError()
+            case .success(let imageResult):
+                UIBlockingProgressHUD.dismiss()
+                self.image = imageResult.image
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                UIBlockingProgressHUD.dismiss()
+                self.showAlert()
             }
         }
     }
-    
-    func showError() {
-        let alert = AlertModel(title: "Что-то пошло не так.",
-                               message: "Попробовать ещё раз?",
-                               buttonText: "Не надо",
-                               firstcompletion: { [weak self] in
-            guard let self = self else { return }
-            self.dismiss(animated: true)
-        },
-                               secondButtonText: "Повторить",
-                               secondCompletion: { [weak self] in
-            guard let self = self else { return }
-            
-            UIBlockingProgressHUD.show()
-            downloadImage()
-        })
-    
-        alertPresenter?.show(alert)
+}
+
+extension SingleImageViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        imageView
     }
 }
 
-extension SingleImageViewController: AlertPresentableDelagate {
-    func present(alert: UIAlertController, animated flag: Bool) {
-        self.present(alert, animated: flag)
+private extension SingleImageViewController {
+    func showAlert() {
+        let alertModel = AlertModel(
+            title: "Что-то пошло не так(",
+            message: "Попробовать еще раз?",
+            firstButtonText: "Повторить",
+            secondButtonText: "Не надо",
+            firstButtonCompletion: {
+                self.showFullScreenImage()
+            },
+            secondButtonCompletion: {})
+        self.alertPresenter?.showAlert(alertModel)
     }
 }

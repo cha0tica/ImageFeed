@@ -9,23 +9,24 @@ import Foundation
 import SwiftKeychainWrapper
 
 class OAuth2TokenStorage {
+    static let shared = OAuth2TokenStorage()
+    private let keyChainWrapper = KeychainWrapper.standard
+    
     private enum Keys: String {
-        case token
+        case accessToken
     }
     
     var token: String? {
         get {
-            KeychainWrapper.standard.string(forKey: Keys.token.rawValue)
+            keyChainWrapper.string(forKey: Keys.accessToken.rawValue)
         }
         set {
-            guard let newValue = newValue else {
-                KeychainWrapper.standard.removeObject(forKey: Keys.token.rawValue)
-                return
-            }
-            let isSuccess = KeychainWrapper.standard.set(newValue, forKey: Keys.token.rawValue)
-            guard isSuccess else {
-                return
-            }
+            keyChainWrapper.set(newValue ?? "", forKey: Keys.accessToken.rawValue)
         }
+    }
+    
+    func removeToken() {
+        token = nil
+        keyChainWrapper.removeObject(forKey: Keys.accessToken.rawValue)
     }
 }

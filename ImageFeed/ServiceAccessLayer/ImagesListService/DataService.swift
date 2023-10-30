@@ -19,7 +19,6 @@ class DateService {
     
     private let dateFormatterIso = ISO8601DateFormatter()
     
-    //MARK: - Initialization
     private init() { }
     
     func dateFromString(str: String?) -> Date {

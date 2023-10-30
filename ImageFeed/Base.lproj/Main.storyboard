@@ -244,6 +244,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="r53-6R-rar"/>
+                    <connections>
+                        <outlet property="signInButton" destination="QLu-WU-ADo" id="Qbl-7s-ZNo"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BJb-MD-5oR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -252,7 +255,7 @@
         <!--Web View View Controller-->
         <scene sceneID="Xnx-Cq-abc">
             <objects>
-                <viewController id="Ced-5K-ah4" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="Ced-5K-ah4" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="338-lf-gOR">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -13,10 +13,6 @@ protocol ImagesListCellDelegate: AnyObject {
 }
 
 final class ImagesListCell: UITableViewCell {
-    static let reuseIdentifier = Keys.reuseIdentifierName
-    weak var delegate: ImagesListCellDelegate?
-    private let gradient = Gradient()
-    private var animationLayer: CALayer?
     
     @IBOutlet weak var backgroundLabel: UILabel!
     @IBOutlet var cellImage: UIImageView!
@@ -26,107 +22,86 @@ final class ImagesListCell: UITableViewCell {
     @IBAction func likeButtonClicked(_ sender: Any) {
         delegate?.imageListCellDidTapLike(self)
     }
+    static let reuseIdentifier = "ImagesListCell"
+    private var isLiked = false
     
-    private struct Keys {
-        static let reuseIdentifierName = "ImagesListCell"
-        static let placeholderImageName = "image_cell_placeholder"
-        static let likedImageName = "Like"
-        static let unlikedImageName = "No_Like"
+    weak var delegate: ImagesListCellDelegate?
+    
+    override func layoutSubviews() {
+        backgroundLabel.layer.sublayers = nil
+        setupGradient()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        removeGradient()
-        cellImage.kf.cancelDownloadTask()
+        backgroundLabel.layer.sublayers = nil
+        cellImage?.kf.cancelDownloadTask()
     }
 }
 
 extension ImagesListCell {
-    func configCell(using photoStringURL: String, with indexPath: IndexPath, date: Date?) -> Bool {
-        gradientBackGroundFor(backgroundLabel)
-        
-        dateLabel.text = DateService.shared.stringFromDate(date: date)
-        
-        var status = false
-        
-        guard let photoURL = URL(string: photoStringURL) else {
-            return status
-        }
-        
-        let placeholderImage = UIImage(named: Keys.placeholderImageName)
-        
-        cellImage.kf.indicatorType = .activity
-        cellImage.kf.setImage(
-            with: photoURL,
-            placeholder: placeholderImage
-        ) { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-                case .success(_):
-                    self.removeGradient()
-                    
-                    status = true
-                case .failure:
-                    self.removeGradient()
-                    cellImage.image = placeholderImage
-            }
-        }
-        
-        return status
+    func configure(with photo: Photo, completion: @escaping (Result<Void, Error>) -> Void) {
+        selectionStyle = .none
+        configurateCellImage(with: photo, completion: completion)
+        configurePhotoLikeButton(photo)
+        configureDateLabel(with: photo)
     }
     
-    private func gradientBackGroundFor(_ label: UILabel) {
-        if label.layer.sublayers?.count ?? 0 > 0 { return }
-        
-        let colorTop = UIColor(red: 26, green: 27, blue: 34, alpha: 0.0)
-        let colorBottom = UIColor(red: 26, green: 27, blue: 34, alpha: 0.2)
-        
-        let backgroundLayer = CAGradientLayer()
-        backgroundLayer.frame = label.bounds
-        backgroundLayer.colors = [colorTop.cgColor, colorBottom.cgColor]
-        backgroundLayer.locations = [0.0, 1]
-        backgroundLayer.startPoint = CGPoint(x: 1.0, y: 1.0)
-        backgroundLayer.endPoint = CGPoint(x: 0.0, y: 0.0)
-        
-        label.backgroundColor = UIColor.clear
-        
-        label.layer.insertSublayer(backgroundLayer, at: 0)
-        label.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-    }
-    
-    func setIsLiked(_ isLiked: Bool) {
-        let likeImageText = isLiked ? Keys.likedImageName : Keys.unlikedImageName
-        guard let likeImage = UIImage(named: likeImageText) else { return }
-        likeButton.setImage(likeImage, for: .normal)
-    }
-    
-    func addGradient(size: CGSize) {
-        
-        let cellGradient = gradient.getGradient(
-            size: size,
-            cornerRadius: cellImage.layer.cornerRadius)
-        
-        var positionSubLayer: UInt32 = 0
-        if let sublayers = cellImage.layer.sublayers {
-            positionSubLayer = UInt32(sublayers.count) + 1
-        }
-        cellImage.layer.insertSublayer(cellGradient, at: positionSubLayer)
-        
-        likeButton.isHidden = true
-        backgroundLabel.isHidden = true
-        dateLabel.isHidden = true
-        
-        animationLayer = cellGradient
-    }
-    
-    private func removeGradient() {
-        animationLayer?.removeFromSuperlayer()
-        
-        likeButton.isHidden = false
-        backgroundLabel.isHidden = false
-        dateLabel.isHidden = false
+    func updateLikeImage() {
+        likeButton.setImage(getLikeImage(), for: .normal)
     }
 }
 
+private extension ImagesListCell {
+    func configurePhotoLikeButton(_ photo: Photo) {
+        self.isLiked = photo.isLiked
+        likeButton.setImage(getLikeImage(), for: .normal)
+    }
+    
+    func configureDateLabel(with photo: Photo) {
+        dateLabel.text = photo.createdAt ?? ""
+    }
+    
+    func configurateCellImage(with photo: Photo, completion: @escaping (Result<Void, Error>) -> Void) {
+        let placeholder = UIImage(named: "image_list_cell_stub") ?? UIImage()
+        
+        cellImage?.kf.indicatorType = .activity
+        cellImage?.layer.cornerRadius = 16
+        cellImage?.layer.masksToBounds = true
+        cellImage?.image = placeholder
+        
+        guard let url = URL(string: photo.thumbImageURL) else {
+            print("🔴 ERROR configure list cell")
+            return
+        }
+        cellImage?.kf.setImage(with: url, placeholder: placeholder, completionHandler: (
+            { result in
+                switch result {
+                case .success(_):
+                    completion(.success(()))
+                case.failure(let error):
+                    completion(.failure(error))
+                }
+            }))
+    }
+    
+    func setupGradient() {
+        let height = backgroundLabel.bounds.height
+        let width = backgroundLabel.bounds.width
+        
+        let colorTop = UIColor.black.withAlphaComponent(0.0).cgColor
+        let colorBottom = UIColor.black.withAlphaComponent(0.4).cgColor
+        
+        let gradient = CAGradientLayer()
+        gradient.frame = CGRect(x:0, y:0, width: width, height: height)
+        gradient.colors = [colorTop, colorBottom]
+        gradient.locations = [0, 1]
+        gradient.startPoint = CGPoint(x: 0.5, y: 0)
+        gradient.endPoint = CGPoint(x: 0.5, y: 1)
+        backgroundLabel.layer.addSublayer(gradient)
+    }
+    
+    func getLikeImage() -> UIImage? {
+        return isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+    }
+}
