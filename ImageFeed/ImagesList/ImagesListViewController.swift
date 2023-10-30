@@ -8,51 +8,69 @@
 import UIKit
 
 class ImagesListViewController: UIViewController {
-
+    private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private let imageListService = ImagesListService.shared
+    private let service = ImagesListService.shared
+    private var photos: [Photo] = []
+    
     @IBOutlet private var tableView: UITableView!
     
-    //для форматирования даты
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.timeStyle = .none
         return formatter
     }()
-    
-    //создаем массив чисел от 0 до 19 и возвращает массив строк - это имена картинок
-    private let photosName: [String] = Array(0..<20).map{ "\($0)" }
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-    }
-}
-
-extension ImagesListViewController {
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return
-        }
-        cell.cellImage.image = image
-        cell.dateLabel.text = dateFormatter.string(from: Date())
         
-        let notLiked = indexPath.row % 2 != 0 //вычисляем нечетные картинки и говорим, что они не полайканы
-        let likeImage = notLiked ? UIImage(named: "No_Like") : UIImage(named: "Like") //если нечетный, то сердечко не активно, иначе активно
-        cell.likeButton.setImage(likeImage, for: .normal) //устанавливаем на иконку то, что вычислили выше
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        UIBlockingProgressHUD.show()
+        
+        NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main) { _ in
+                self.updateTableViewAnimated()
+                UIBlockingProgressHUD.dismiss()
+            }
+        imageListService.fetchPhotosNextPage()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showSingleImageSegueIdentifier {
+            if
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            {
+                let imageUrl = photos[indexPath.row]
+                viewController.fullScreenImageURL = imageUrl.largeImageURL
+            } else {
+                super.prepare(for: segue, sender: sender)
+            }
+        }
+    }
+    
 }
 
 extension ImagesListViewController: UITableViewDelegate {
-    //в ответе за тапы по ячейке
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
     
-    //в ответе за высоту ячейки
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return 0
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == photos.count {
+            imageListService.fetchPhotosNextPage()
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let image = photos[indexPath.row]
+        
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
         let imageWidth = image.size.width
@@ -60,28 +78,68 @@ extension ImagesListViewController: UITableViewDelegate {
         let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
     }
+    
 }
 
 extension ImagesListViewController: UITableViewDataSource {
-    //количество ячеек
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count //ячеек столько, сколько картинок
+        return photos.count
     }
     
-    //возвращаем ячейку
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        //включаем переиспользование ячеек
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-                
-                guard let imageListCell = cell as? ImagesListCell else {
-                    return UITableViewCell()
-                }
-                
-        configCell(for: imageListCell, with: indexPath)
-                return imageListCell
+        
+        guard let imageListCell = cell as? ImagesListCell else {
+            return UITableViewCell()
+        }
+        imageListCell.delegate = self
+        imageListCell.configure(with: photos[indexPath.row]) { result in
+            switch result {
+            case.success(_):
+                tableView.reloadRows(at: [indexPath], with: .fade)
+                print(indexPath.row)
+            case .failure(_):
+                print("❤️")
+            }
+        }
+        return imageListCell
+        }
     }
-    
 
-    
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        UIBlockingProgressHUD.show()
+        imageListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success():
+                self.photos = imageListService.photos
+                cell.updateLikeImage()
+                self.tableView.reloadRows(at: [indexPath], with: .none)
+                UIBlockingProgressHUD.dismiss()
+            case .failure(let error):
+                print("\(error)")
+                UIBlockingProgressHUD.dismiss()
+            }
+        }
+    }
+}
+
+private extension ImagesListViewController {
+    func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newCount = imageListService.photos.count
+        photos = imageListService.photos
+        
+        if oldCount != newCount {
+            tableView.performBatchUpdates {
+                let indexPaths = (oldCount..<newCount).map{ i in
+                    IndexPath(row: i, section: 0)
+                }
+                tableView.insertRows(at: indexPaths, with: .fade)
+            } completion: { _ in }
+        }
+    }
 }
